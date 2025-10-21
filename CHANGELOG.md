@@ -1,5 +1,8 @@
 # SpecQuery Changelog
 
+## v0.1.1 - Project cleanup & packaging
+  - Added Gif for Npm Package Page
+
 ## v0.1.0 - Project cleanup & packaging
 
 - Split the CLI into `src/cli.ts` and exposed the programmatic API from `src/index.ts`.
