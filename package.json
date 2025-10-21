@@ -1,6 +1,6 @@
 {
   "name": "spec-query",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generate fully-typed TanStack Query hooks from OpenAPI specifications.",
   "type": "module",
   "license": "MIT",
