@@ -213,6 +213,8 @@ function usePetMutations() {
 - `--group-by-tag` / `--no-group-by-tag`: Toggle grouping hooks by OpenAPI tags
 - `--openapi-ts-config <path>`: Path to an `openapi-typescript` JSON config
 - `--generate-types`: Generate the supplemental `types.ts` helper
+- `--verbose`: Log each parsed endpoint while generating
+- `--dry-run`: Show which files would be written without touching disk
 
 ### OpenAPI-TS Configuration
 

@@ -1,5 +1,7 @@
 # SpecQuery
 
+![Animated SpecQuery demo showing CLI generation and VS Code output](docs/assets/spec-query-demo.gif)
+
 Generate fully-typed TanStack Query clients from OpenAPI v3 specifications. SpecQuery consumes a JSON or YAML schema and emits a ready-to-use React Query client with hooks, query keys, and invalidation helpers.
 
 ## Features
@@ -8,6 +10,11 @@ Generate fully-typed TanStack Query clients from OpenAPI v3 specifications. Spec
 - 🪝 Query + mutation hooks that share a generated API client.
 - 🔁 Query key factory and invalidation helpers aligned with the emitted hooks.
 - 📦 Programmatic API for integrating SpecQuery into custom build pipelines.
+
+## Why SpecQuery?
+- **Compared to hey-api**: SpecQuery focuses on TanStack Query hooks, not full-stack client scaffolding, so the generated code drops cleanly into existing React apps without extra runtime dependencies.
+- **Compared to openapi-typescript**: Instead of just types, SpecQuery produces ready-to-use hooks and clients while still integrating with the types you already generate via `openapi-typescript`.
+- **Compared to swagger-typescript-api**: Swagger TypeScript API is HTTP-client oriented; SpecQuery embraces React Query conventions (query keys, invalidation helpers, hook signatures) for stateful React apps.
 
 ## Requirements
 - Node.js ≥ 18.18.
@@ -41,6 +48,8 @@ npx spec-query \
 | `--generate-types` | Emit a lightweight helper `types.ts` file. | `false` |
 | `--group-by-tag` / `--no-group-by-tag` | Emit one hook file per tag or a single file. | `true` |
 | `--openapi-ts-config <path>` | Path to an `openapi-typescript` JSON config when you share types. | — |
+| `--verbose` | Log each parsed operation to stdout. | `false` |
+| `--dry-run` | Preview generated file paths without writing them. | `false` |
 
 Run `npx spec-query --help` to see the full help output.
 

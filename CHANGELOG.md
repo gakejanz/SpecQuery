@@ -7,6 +7,7 @@
 - Added query serialization helpers, improved parameter typing, and removed unused dependencies.
 - Introduced a dedicated `tsup` build config, NPM package metadata, and MIT license.
 - Added `.gitignore`, CONTRIBUTING guidelines, and refreshed documentation with the new workflow.
+- Added CLI `--verbose` / `--dry-run` flags and colorised completion output.
 
 ## v0.2.0 - Enhanced OpenAPI-TS Integration & JSON Support
 
