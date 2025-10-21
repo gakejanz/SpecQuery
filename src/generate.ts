@@ -1,6 +1,10 @@
 // src/generate.ts
+import kleur from "kleur";
 import { loadSpec } from "./loaders/openapi.js";
-import { loadOpenApiTsConfig, generateOpenApiTsIntegration } from "./loaders/openapi-ts.js";
+import {
+  loadOpenApiTsConfig,
+  generateOpenApiTsIntegration,
+} from "./loaders/openapi-ts.js";
 import { writeFiles } from "./emit/writeFiles.js";
 import { renderClient } from "./emit/templates/client.tpl.js";
 import { renderQueryKeys } from "./emit/templates/queryKeys.tpl.js";
@@ -11,6 +15,8 @@ import {
 import { renderInvalidate } from "./emit/templates/invalidate.tpl.js";
 import type { SpecModel } from "./model.js";
 
+const { bold, cyan, green, magenta, yellow } = kleur;
+
 export interface GenerateOptions {
   schema: string;
   outDir: string;
@@ -18,6 +24,8 @@ export interface GenerateOptions {
   groupByTag: boolean;
   openApiTsConfig?: string | undefined;
   generateTypes?: boolean;
+  verbose?: boolean;
+  dryRun?: boolean;
 }
 
 export async function generate(opts: GenerateOptions) {
@@ -40,8 +48,22 @@ export async function generate(opts: GenerateOptions) {
     byTag.set(op.tag, list);
   }
 
-  // emit core files
-  const files = [
+  if (opts.verbose) {
+    console.log(
+      cyan(
+        `${bold("Parsed operations")} (${spec.ops.length}):\n` +
+          spec.ops
+            .map(
+              (op) =>
+                `  • [${op.method.toUpperCase()}] ${op.path}  (${op.operationId})`,
+            )
+            .join("\n"),
+      ),
+    );
+  }
+
+  // plan core files
+  const plannedFiles: { path: string; contents: string }[] = [
     {
       path: `${opts.outDir}/client.ts`,
       contents: renderClient(opts.baseUrl, openApiTsIntegration),
@@ -52,43 +74,59 @@ export async function generate(opts: GenerateOptions) {
 
   // Generate types if requested
   if (opts.generateTypes) {
-    files.push({
+    plannedFiles.push({
       path: `${opts.outDir}/types.ts`,
-      contents: generateTypesFile(spec)
+      contents: generateTypesFile(spec),
     });
   }
 
-  await writeFiles(files);
-
-  // emit hooks per tag
+  // plan hooks per tag
   if (opts.groupByTag) {
     const hooks = Array.from(byTag.entries()).map(([tag, ops]) => ({
       path: `${opts.outDir}/hooks/${tag}.generated.ts`,
       contents: renderHooksByTag(tag, ops),
     }));
-    await writeFiles(hooks);
+    plannedFiles.push(...hooks);
   } else {
-    await writeFiles([
-      {
-        path: `${opts.outDir}/hooks.generated.ts`,
-        contents: renderHooksCombined(byTag),
-      },
-    ]);
+    plannedFiles.push({
+      path: `${opts.outDir}/hooks.generated.ts`,
+      contents: renderHooksCombined(byTag),
+    });
   }
 
-  // Generate openapi-ts integration files if configured
+  // plan openapi-ts integration files if configured
   if (openApiTsIntegration) {
-    await writeFiles([
-      {
-        path: `${opts.outDir}/openapi-ts.config.ts`,
-        contents: generateOpenApiTsConfigFile(openApiTsIntegration)
-      }
-    ]);
+    plannedFiles.push({
+      path: `${opts.outDir}/openapi-ts.config.ts`,
+      contents: generateOpenApiTsConfigFile(openApiTsIntegration),
+    });
   }
 
-  console.log(`✨ Generated ${spec.ops.length} operations to ${opts.outDir}`);
+  if (opts.dryRun) {
+    console.log(
+      yellow(
+        `${bold("Dry run")}: ${plannedFiles.length} files would be written:\n` +
+          plannedFiles.map((file) => `  • ${file.path}`).join("\n"),
+      ),
+    );
+  } else {
+    await writeFiles(plannedFiles);
+  }
+
+  const resultEmoji = opts.dryRun ? "📝" : "✨";
+  const message = `${resultEmoji} ${
+    opts.dryRun ? "Planned" : "Generated"
+  } ${spec.ops.length} operations → ${opts.outDir}`;
+  console.log(green(message));
+
   if (openApiTsIntegration) {
-    console.log(`🔗 OpenAPI-TS integration configured`);
+    console.log(
+      magenta(
+        `🔗 openapi-typescript integration ${
+          opts.dryRun ? "would be configured" : "configured"
+        }`,
+      ),
+    );
   }
 }
 
@@ -137,7 +175,6 @@ function getTypeScriptType(param: any): string {
 function generateOpenApiTsConfigFile(integration: any): string {
   return `// OpenAPI-TS Configuration
 export const openApiTsConfig = {
-  clientPath: "${integration.clientPath}",
   typesPath: "${integration.typesPath}",
   baseUrl: "${integration.baseUrl || ""}",
   headers: ${JSON.stringify(integration.headers || {}, null, 2)}

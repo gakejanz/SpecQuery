@@ -23,7 +23,9 @@ program
   .option("--openapi-ts-config <path>", "Path to openapi-typescript configuration file")
   .option("--generate-types", "Emit a lightweight helper types file")
   .option("--group-by-tag", "Generate one hooks file per OpenAPI tag", true)
-  .option("--no-group-by-tag", "Write all hooks into a single file");
+  .option("--no-group-by-tag", "Write all hooks into a single file")
+  .option("--verbose", "Log parsed operations to stdout")
+  .option("--dry-run", "Preview generated files without writing them");
 
 program.parse();
 
@@ -34,6 +36,8 @@ const opts = program.opts<{
   groupByTag: boolean;
   openapiTsConfig?: string;
   generateTypes?: boolean;
+  verbose?: boolean;
+  dryRun?: boolean;
 }>();
 
 generate({
@@ -43,6 +47,8 @@ generate({
   groupByTag: opts.groupByTag,
   openApiTsConfig: opts.openapiTsConfig || undefined,
   generateTypes: Boolean(opts.generateTypes),
+  verbose: Boolean(opts.verbose),
+  dryRun: Boolean(opts.dryRun),
 }).catch((error) => {
   console.error(error instanceof Error ? error.message : error);
   process.exit(1);
