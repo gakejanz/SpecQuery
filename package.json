@@ -1,0 +1,64 @@
+{
+  "name": "spec-query",
+  "version": "0.1.0",
+  "description": "Generate fully-typed TanStack Query hooks from OpenAPI specifications.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Jake Ganz",
+  "homepage": "https://github.com/jakeganz/SpecQuery#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakeganz/SpecQuery.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jakeganz/SpecQuery/issues"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "spec-query": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./cli": "./dist/cli.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "openapi",
+    "tanstack-query",
+    "react-query",
+    "codegen",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "tsup",
+    "dev": "tsx src/cli.ts",
+    "prepare": "npm run build",
+    "test": "vitest --run --passWithNoTests"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
+    "change-case": "^5.4.4",
+    "commander": "^14.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.0",
+    "tsup": "^8.5.0",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}

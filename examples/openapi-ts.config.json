@@ -1,0 +1,8 @@
+{
+  "typesPath": "./src/api/types.ts",
+  "baseUrl": "https://api.example.com",
+  "headers": {
+    "Authorization": "Bearer {{token}}",
+    "X-API-Version": "1.0"
+  }
+}
